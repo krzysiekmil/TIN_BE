@@ -31,7 +31,7 @@ public class AnimalService  {
         User owner = SecurityUtils.getCurrentUserLogin()
             .map(userService::loadUserByUsername)
             .map(User.class::cast)
-            .orElseThrow();
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
         entity.setUser(owner);
         return repository.save(entity);
     }

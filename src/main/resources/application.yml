@@ -1,6 +1,6 @@
 application:
   cors:
-    allowed-origins: 'http://localhost:4200,http://146.59.3.140:5555,https://146.59.3.140:5555,http://146.59.3.140,https://146.59.3.140,http://www.aukcjabydla.pl,https://www.aukcjabydla.pl,http://aukcjabydla.pl,https://aukcjabydla.pl,aukcjabydla.pl'
+    allowed-origins: 'http://localhost:4200'
     allowed-methods: '*'
     allowed-headers: '*'
     exposed-headers: 'Authorization,Link,X-Total-Count,X-${cattle.clientApp.name}-alert,X-${cattle.clientApp.name}-error,X-${cattle.clientApp.name}-params'

@@ -7,12 +7,16 @@ plugins {
 
 group = 'pjwstk.s20124'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '19'
+sourceCompatibility = "19.PREVIEW"
 
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+}
+
+tasks.named("compileJava") {
+    options.compilerArgs.add("--enable-preview")
 }
 
 repositories {
@@ -28,10 +32,13 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     providedRuntime 'io.jsonwebtoken:jjwt-jackson:0.11.2'
@@ -41,4 +48,5 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+    jvmArgs("--enable-preview")
 }

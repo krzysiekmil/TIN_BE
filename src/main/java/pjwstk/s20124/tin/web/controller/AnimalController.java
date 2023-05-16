@@ -1,9 +1,7 @@
-package pjwstk.s20124.tin.controller;
+package pjwstk.s20124.tin.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,15 +10,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import pjwstk.s20124.tin.exception.BadRequestException;
+import pjwstk.s20124.tin.web.exception.BadRequestException;
 import pjwstk.s20124.tin.model.Animal;
-import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.dto.AnimalDto;
 import pjwstk.s20124.tin.model.mapper.AnimalMapper;
 import pjwstk.s20124.tin.services.AnimalService;
-import pjwstk.s20124.tin.services.CrudApi;
 
+import java.awt.print.Pageable;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -41,7 +37,6 @@ public class AnimalController  {
     }
     @PutMapping
     public AnimalDto update(@RequestBody AnimalDto dto) {
-
         if(dto.getId() == null){
             throw new BadRequestException();
         }

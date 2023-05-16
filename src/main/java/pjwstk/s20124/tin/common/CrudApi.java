@@ -1,7 +1,10 @@
-package pjwstk.s20124.tin.services;
+package pjwstk.s20124.tin.common;
 
 import jakarta.validation.Valid;
-import pjwstk.s20124.tin.exception.BadRequestException;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Collection;
 import java.util.Optional;

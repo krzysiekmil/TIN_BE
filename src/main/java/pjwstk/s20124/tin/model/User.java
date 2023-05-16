@@ -18,8 +18,15 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DialectOverride;
+import org.mapstruct.control.MappingControl;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,12 +34,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @Valid
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends AbstractEntity implements UserDetails {
 
     @Id
@@ -53,12 +65,48 @@ public class User extends AbstractEntity implements UserDetails {
     @NotNull
     private String password;
 
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(name = "user_friends",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "friend_id"))
+    private Set<User> friends = new LinkedHashSet<>();
+
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(name = "user_friends",
+        joinColumns = @JoinColumn(name = "friend_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> friendOf = new LinkedHashSet<>();
+
+    @Builder.Default
+    @OneToMany(orphanRemoval = true)
+    @JoinTable(name = "user_invitation",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "invited_user_id"))
+    private Set<User> invitations = new LinkedHashSet<>();
+
+    @Builder.Default
+    @ManyToMany
+    @JoinTable(name = "user_invitation",
+        joinColumns = @JoinColumn(name = "invited_user_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> invitedBy = new LinkedHashSet<>();
+
+    @Builder.Default
+    @ColumnDefault(value = "true")
     private boolean accountNonExpired = true;
 
+    @Builder.Default
+    @ColumnDefault(value = "true")
     private boolean accountNonLocked = true;
 
+    @Builder.Default
+    @ColumnDefault(value = "true")
     private boolean credentialsNonExpired = true;
 
+    @Builder.Default
+    @ColumnDefault(value = "true")
     private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -66,8 +114,8 @@ public class User extends AbstractEntity implements UserDetails {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-    @OneToMany(orphanRemoval = true)
-    private Set<Animal> animals = new java.util.LinkedHashSet<>();
+    @OneToMany(orphanRemoval = true, mappedBy = "user")
+    private Set<Animal> animals = new LinkedHashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,4 +126,16 @@ public class User extends AbstractEntity implements UserDetails {
             .toList();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        User user = (User) o;
+        return getId() != null && Objects.equals(getId(), user.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

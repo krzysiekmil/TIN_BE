@@ -1,21 +1,25 @@
 package pjwstk.s20124.tin.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import pjwstk.s20124.tin.exception.BadRequestException;
+import pjwstk.s20124.tin.model.AbstractEntity;
 import pjwstk.s20124.tin.model.Animal;
 import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.mapper.AnimalMapper;
 import pjwstk.s20124.tin.repository.AnimalRepository;
+import pjwstk.s20124.tin.repository.EventRepository;
+import pjwstk.s20124.tin.repository.PostRepository;
 import pjwstk.s20124.tin.utils.SecurityUtils;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -45,6 +49,8 @@ public class AnimalService  {
                 .map(User::getUsername)
                 .equals(SecurityUtils.getCurrentUserLogin());
 
+
+
         if(!owner){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -62,9 +68,8 @@ public class AnimalService  {
         return repository.findById(id);
     }
 
-    public Collection<Animal> getList() {
-        return repository.findAll();
-    }
+    @Transactional
+    public Collection<Animal> getList() {return repository.findAll();}
 
     public Collection<Animal> getMyList() {
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow();

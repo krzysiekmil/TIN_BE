@@ -54,12 +54,16 @@ public class WebSecurityConfig {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/v3/api-docs/**","/swagger-ui/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                .requestMatchers("/api/auth").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/animals/**").permitAll()
                 .requestMatchers("/api/animals/me").authenticated()
-                .requestMatchers("/api/**").authenticated())
+                .requestMatchers("/api/feed").permitAll()
+                .requestMatchers("/api/**").permitAll()
+            )
             .apply(securityConfigurerAdapter());
 
         return http.build();

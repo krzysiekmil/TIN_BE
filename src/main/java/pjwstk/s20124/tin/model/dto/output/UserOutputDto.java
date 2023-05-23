@@ -25,6 +25,7 @@ public class UserOutputDto {
     private boolean isFriend;
     private String invitationStatus;
     private boolean me;
+    private String image;
     private Set<AnimalDto> animals;
     private Set<UserInvitationsOutputDto> friends;
 }

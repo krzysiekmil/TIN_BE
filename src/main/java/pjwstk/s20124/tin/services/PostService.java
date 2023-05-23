@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.model.ERole;
 import pjwstk.s20124.tin.model.Event;
@@ -24,6 +25,7 @@ import pjwstk.s20124.tin.repository.PostRepository;
 import pjwstk.s20124.tin.repository.UserRepository;
 import pjwstk.s20124.tin.utils.SecurityUtils;
 
+import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +38,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
     public Page<PostOutputDto> getList(Long authorId, String author, int pageNo, String order, String dir) {
 
         User user = User.builder()
@@ -56,12 +59,14 @@ public class PostService {
             .map(postMapper::mapToOutputDto);
     }
 
-    public Post create(Post post){
+    public Post create(Post post, MultipartFile multipartFile){
         User user = SecurityUtils.getCurrentUserLogin()
             .flatMap(userRepository::findByUsername)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
         post.setAuthor(user);
+        String imagePath = fileStorageService.store(multipartFile);
+        post.setImage(imagePath);
 
         return postRepository.save(post);
     }
@@ -71,7 +76,7 @@ public class PostService {
     }
 
     @Transactional
-    public Post update(Long id, Post postDto) {
+    public Post update(Long id, Post postDto, MultipartFile multipartFile) {
         Post entity = postRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -83,8 +88,18 @@ public class PostService {
         if(!Objects.equals(postDto.getAuthor().getId(), currentUser.getId()) && !SecurityUtils.hasCurrentUserThisAuthority(ERole.ROLE_ADMIN.name())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        if(Objects.isNull(postDto.getImage())){
+            this.fileStorageService.deleteFile(entity.getImage());
+            entity.setImage(null);
+        }
 
         postMapper.updateEntity(entity, postDto);
+
+        if(Objects.nonNull(multipartFile)){
+            String imagePath = fileStorageService.store(multipartFile);
+            fileStorageService.deleteFile(entity.getImage());
+            entity.setImage(imagePath);
+        }
 
         return entity;
     }

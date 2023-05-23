@@ -39,7 +39,7 @@ public class Post extends AbstractEntity {
     @Column(length = 1024)
     private String content;
 
-    private String url;
+    private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User author;

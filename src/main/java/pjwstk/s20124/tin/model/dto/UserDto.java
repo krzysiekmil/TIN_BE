@@ -24,6 +24,7 @@ public class UserDto {
     private Date dateOfBirth;
     private String email;
     private Set<Role> roles;
+    private String image;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String password;

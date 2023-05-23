@@ -41,6 +41,8 @@ public class Animal extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private AnimalType type;
 
+    private String image;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

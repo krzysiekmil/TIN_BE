@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.common.CrudApi;
 import pjwstk.s20124.tin.model.ERole;
@@ -24,6 +25,7 @@ import pjwstk.s20124.tin.utils.SecurityUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -34,6 +36,7 @@ public class UserService implements  UserDetailsService {
     private final UserRepository repository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final FileStorageService fileStorageService;
 
     public User create(User entity) {
 
@@ -53,6 +56,7 @@ public class UserService implements  UserDetailsService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
 
+
         userMapper.updateEntity(currentUser, entity);
 
         if(SecurityUtils.hasCurrentUserThisAuthority(ERole.ROLE_ADMIN.name()))
@@ -65,14 +69,24 @@ public class UserService implements  UserDetailsService {
     }
 
     @Transactional
-    public User updateMe(User entity) {
+    public User updateMe(User entity, MultipartFile file) {
         User currentUser = SecurityUtils.getCurrentUserLogin()
             .flatMap(this::findByUsername)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
 
+        if(Objects.isNull(entity.getImage())){
+            this.fileStorageService.deleteFile(currentUser.getImage());
+            entity.setImage(null);
+        }
+
         userMapper.updateEntity(currentUser, entity);
 
+        if(Objects.nonNull(file)){
+            String imagePath = fileStorageService.store(file);
+            fileStorageService.deleteFile(entity.getImage());
+            entity.setImage(imagePath);
+        }
 
         return currentUser;
     }
@@ -122,7 +136,7 @@ public class UserService implements  UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repository.findByUsername(username).orElseThrow();
+        return repository.findByUsername(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
     public Optional<Long> getIdByUsername(String username) {

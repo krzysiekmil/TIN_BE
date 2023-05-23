@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import pjwstk.s20124.tin.model.Post;
+import pjwstk.s20124.tin.model.dto.AnimalDto;
 import pjwstk.s20124.tin.model.dto.input.PostIncomeDto;
 import pjwstk.s20124.tin.model.dto.output.PostOutputDto;
 import pjwstk.s20124.tin.model.mapper.PostMapper;
@@ -29,18 +32,18 @@ public class PostController {
     private final PostMapper postMapper;
 
     @PostMapping
-    public PostOutputDto create(@Valid @RequestBody PostIncomeDto dto) {
+    public PostOutputDto create(@RequestPart(required = false) MultipartFile file, @RequestPart @Valid PostIncomeDto dto) {
         Post postDto = postMapper.mapIncomeDtoToEntity(dto);
 
-        return postMapper.mapToOutputDto(postService.create(postDto));
+        return postMapper.mapToOutputDto(postService.create(postDto, file));
     }
 
 
     @PutMapping("/{id}")
-    public PostOutputDto update(@PathVariable Long id, @Valid @RequestBody PostIncomeDto dto) throws Exception {
+    public PostOutputDto update(@PathVariable Long id, @RequestPart(required = false) MultipartFile file, @RequestPart @Valid PostIncomeDto dto) throws Exception {
         Post postDto = postMapper.mapIncomeDtoToEntity(dto);
 
-        return postMapper.mapToOutputDto( postService.update(id, postDto));
+        return postMapper.mapToOutputDto( postService.update(id, postDto, file));
     }
 
     @DeleteMapping

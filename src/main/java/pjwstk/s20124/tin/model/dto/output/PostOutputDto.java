@@ -15,13 +15,14 @@ public class PostOutputDto {
 
     private String title;
     private String content;
-    private String url;
 
     private String author;
     private Long authorId;
 
     private String animal;
     private Long animalId;
+
+    private String image;
 
     private Set<CommentOutputDto> comments;
 }

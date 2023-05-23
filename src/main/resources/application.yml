@@ -6,3 +6,8 @@ application:
     exposed-headers: 'Authorization,Link,X-Total-Count,X-${cattle.clientApp.name}-alert,X-${cattle.clientApp.name}-error,X-${cattle.clientApp.name}-params'
     allow-credentials: true
     max-age: 1800
+spring:
+  servlet:
+    multipart:
+      max-file-size: 11MB
+      max-request-size: 11MB

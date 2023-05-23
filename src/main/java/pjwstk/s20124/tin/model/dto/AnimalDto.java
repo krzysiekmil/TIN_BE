@@ -1,5 +1,6 @@
 package pjwstk.s20124.tin.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AnimalDto {
     private Long id;
     @NotNull
@@ -24,4 +26,5 @@ public class AnimalDto {
     private Date dateOfBirth;
     private AnimalType type;
     private boolean owner = false;
+    private String image;
 }

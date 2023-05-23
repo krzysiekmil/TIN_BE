@@ -65,6 +65,8 @@ public class User extends AbstractEntity implements UserDetails {
     @NotNull
     private String password;
 
+    private String image;
+
     @Builder.Default
     @ManyToMany
     @JoinTable(name = "user_friends",

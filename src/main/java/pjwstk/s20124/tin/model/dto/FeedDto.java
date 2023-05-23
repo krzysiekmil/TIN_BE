@@ -21,4 +21,5 @@ public class FeedDto {
     private LocalDateTime lastModifiedDate;
     private List<CommentOutputDto> comments;
     private boolean owner;
+    private String image;
 }

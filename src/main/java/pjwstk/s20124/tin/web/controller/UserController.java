@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.model.ERole;
 import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.dto.UserDto;
+import pjwstk.s20124.tin.model.dto.input.PostIncomeDto;
 import pjwstk.s20124.tin.model.dto.input.UserFriendsIncomeDto;
 import pjwstk.s20124.tin.model.dto.input.UserPasswordIncomeDto;
 import pjwstk.s20124.tin.model.dto.output.UserInvitationsOutputDto;
@@ -64,10 +67,10 @@ public class UserController {
     }
 
     @PutMapping("/me")
-    public UserDto updateMe(@Valid @RequestBody UserDto dto) {
+    public UserDto updateMe(@RequestPart(required = false) MultipartFile file, @RequestPart @Valid UserDto dto) {
 
         User entity = userMapper.dtoToUser(dto);
-        User user = service.updateMe(entity);
+        User user = service.updateMe(entity, file);
 
         return userMapper.userToDto(user);
     }

@@ -21,6 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long>, PagingAndSort
 
     @Query("SELECT u FROM User u where u.username ilike concat('%',:searchQuery,'%') or concat(u.firstName,u.lastName) ilike concat('%',:searchQuery,'%')")
     Set<User> findAllBySearchQuery(@Param("searchQuery") String searchQuery);
+    
     boolean existsByUsername(String username);
 
     User getReferenceByUsername(String username);

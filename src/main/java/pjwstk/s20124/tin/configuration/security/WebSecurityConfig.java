@@ -30,6 +30,7 @@ import pjwstk.s20124.tin.configuration.security.jwt.TokenProvider;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+    
     private final UserDetailsService userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final TokenProvider tokenProvider;

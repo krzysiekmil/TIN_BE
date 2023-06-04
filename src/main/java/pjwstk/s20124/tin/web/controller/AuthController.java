@@ -33,11 +33,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class AuthController {
+
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
-    private final UserService userService;
 
 
     @PostMapping

@@ -85,7 +85,7 @@ public class PostService {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 
-        if(!Objects.equals(postDto.getAuthor().getId(), currentUser.getId()) && !SecurityUtils.hasCurrentUserThisAuthority(ERole.ROLE_ADMIN.name())){
+        if((Objects.nonNull(postDto.getAuthor()) && !Objects.equals(postDto.getAuthor().getId(), currentUser.getId())) && !SecurityUtils.hasCurrentUserThisAuthority(ERole.ROLE_ADMIN.name())){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         if(Objects.isNull(postDto.getImage())){

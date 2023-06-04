@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 
 public record PostIncomeDto(
     @NotNull String title,
-    @Size() String content
+    @Size(max = 1024) String content,
+
+    String image
 ) {
 }

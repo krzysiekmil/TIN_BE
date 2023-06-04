@@ -69,18 +69,18 @@ public class UserService implements  UserDetailsService {
     }
 
     @Transactional
-    public User updateMe(User entity, MultipartFile file) {
-        User currentUser = SecurityUtils.getCurrentUserLogin()
+    public User updateMe(User dto, MultipartFile file) {
+        User entity = SecurityUtils.getCurrentUserLogin()
             .flatMap(this::findByUsername)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
 
-        if(Objects.isNull(entity.getImage())){
-            this.fileStorageService.deleteFile(currentUser.getImage());
+        if(Objects.isNull(dto.getImage())){
+            this.fileStorageService.deleteFile(entity.getImage());
             entity.setImage(null);
         }
 
-        userMapper.updateEntity(currentUser, entity);
+        userMapper.updateEntity(entity, dto);
 
         if(Objects.nonNull(file)){
             String imagePath = fileStorageService.store(file);
@@ -88,7 +88,7 @@ public class UserService implements  UserDetailsService {
             entity.setImage(imagePath);
         }
 
-        return currentUser;
+        return entity;
     }
 
     @Transactional

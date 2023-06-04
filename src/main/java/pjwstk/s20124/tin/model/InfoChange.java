@@ -31,7 +31,13 @@ public class InfoChange extends AbstractEntity{
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Animal animal;
+    private Animal animalRelatedTo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User userRelatedTo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Event eventRelatedTo;
 
     @OneToMany(mappedBy = "infoChange")
     private Set<Comment> comments;

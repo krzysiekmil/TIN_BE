@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.Valid;
@@ -115,8 +116,10 @@ public class User extends AbstractEntity implements UserDetails {
     @JoinTable(name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<Role> roles = new HashSet<>();
     @OneToMany(orphanRemoval = true, mappedBy = "user")
+    @Builder.Default
     private Set<Animal> animals = new LinkedHashSet<>();
 
     @Override

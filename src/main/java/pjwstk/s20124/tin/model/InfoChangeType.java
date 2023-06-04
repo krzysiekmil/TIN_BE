@@ -6,5 +6,4 @@ public enum InfoChangeType {
     EVENT_CREATED,
     EVENT_ATTENDING_STATUS_CHANGE,
 
-
 }

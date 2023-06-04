@@ -143,4 +143,8 @@ public class User extends AbstractEntity implements UserDetails {
     public int hashCode() {
         return getClass().hashCode();
     }
+
+    public static String getFullName(User user){
+        return user.getFirstName() + " " + user.getLastName();
+    }
 }

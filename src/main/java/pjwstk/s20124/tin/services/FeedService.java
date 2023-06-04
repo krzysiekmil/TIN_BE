@@ -51,9 +51,9 @@ public class FeedService {
             .map(User::getId)
             .toList();
 
-       return Stream.concat(postRepository.findAllByAuthorIdInOrderByCreateDateDesc(friendsId), Stream.empty())
+       return Stream.concat(postRepository.findAllByAuthorIdInOrderByCreateDateDesc(friendsId), infoChangeRepository.findAllByUserIdInOrderByLastModifiedBy(friendsId))
             .skip(offset)
-            .sorted(Comparator.comparing(AbstractEntity::getCreateDate).reversed())
+            .sorted(Comparator.comparing(AbstractEntity::getLastModifiedDate).reversed())
             .map(feedMapper::mapToFeed)
             .limit(5)
             .toList();

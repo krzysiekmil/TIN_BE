@@ -26,6 +26,9 @@ public interface UserMapper {
     @Mapping(target = "invitationStatus", source = ".", qualifiedByName = "isInvitationSend")
     UserOutputDto userToOutputDto(User user);
 
+    @Mapping(target = "isFriend", source = ".", qualifiedByName = "isFriend")
+    @Mapping(target = "me", source = ".", qualifiedByName = "isMe")
+    @Mapping(target = "invitationStatus", source = ".", qualifiedByName = "isInvitationSend")
     UserAdminOutputDto userToAdminOutputDto(User user);
 
     default UserOutputDto userToDtoByRole(User user){

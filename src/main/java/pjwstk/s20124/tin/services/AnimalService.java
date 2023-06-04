@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.model.Animal;
+import pjwstk.s20124.tin.model.InfoChange;
 import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.mapper.AnimalMapper;
 import pjwstk.s20124.tin.repository.AnimalRepository;
@@ -25,6 +26,7 @@ public class AnimalService  {
     private final AnimalMapper animalMapper;
     private final UserService userService;
     private final FileStorageService fileStorageService;
+    private final InfoChangeService infoChangeService;
 
 
     public Animal create(Animal entity, MultipartFile multipartFile) {
@@ -37,7 +39,11 @@ public class AnimalService  {
         String imagePath = fileStorageService.store(multipartFile);
         entity.setImage(imagePath);
 
-        return repository.save(entity);
+        Animal createdAnimal = repository.save(entity);
+
+        InfoChange infoChange = InfoChange.buildNewAnimalChange(owner, createdAnimal);
+        infoChangeService.createInfoChangeRegistry(infoChange);
+        return createdAnimal;
     }
 
     @Transactional

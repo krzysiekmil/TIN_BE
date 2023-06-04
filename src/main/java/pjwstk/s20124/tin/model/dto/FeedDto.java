@@ -18,6 +18,12 @@ public class FeedDto {
     private Long contentId;
     private String author;
     private Long authorId;
+    private String userRelated;
+    private Long userRelatedId;
+    private String eventRelated;
+    private Long eventRelatedId;
+    private String animalRelated;
+    private Long animalRelatedId;
     private LocalDateTime lastModifiedDate;
     private List<CommentOutputDto> comments;
     private boolean owner;

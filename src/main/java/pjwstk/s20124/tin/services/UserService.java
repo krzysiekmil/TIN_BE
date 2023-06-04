@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.common.CrudApi;
 import pjwstk.s20124.tin.model.ERole;
+import pjwstk.s20124.tin.model.InfoChange;
 import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.dto.input.UserPasswordIncomeDto;
 import pjwstk.s20124.tin.model.mapper.UserMapper;
@@ -37,6 +38,7 @@ public class UserService implements  UserDetailsService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final FileStorageService fileStorageService;
+    private final InfoChangeService infoChangeService;
 
     public User create(User entity) {
 
@@ -199,6 +201,10 @@ public class UserService implements  UserDetailsService {
 
         currentUser.getFriends().add(friend);
         currentUser.getFriendOf().add(friend);
+
+        InfoChange infoChange = InfoChange.buildNewFriendChange(friend, currentUser);
+
+        infoChangeService.createInfoChangeRegistry(infoChange);
     }
 
     public Collection<User> getUserInvitation(){

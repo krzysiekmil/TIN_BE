@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.web.exception.BadRequestException;
 import pjwstk.s20124.tin.model.Animal;
 import pjwstk.s20124.tin.model.dto.AnimalDto;
@@ -59,8 +62,10 @@ public class AnimalController  {
     }
 
     @GetMapping("/{id}")
-    public Optional<AnimalDto> getOne(@PathVariable Long id) {
-        return service.getOne(id).map(animalMapper::animalToDto);
+    public AnimalDto getOne(@PathVariable Long id) {
+        return service.getOne(id)
+            .map(animalMapper::animalToDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping

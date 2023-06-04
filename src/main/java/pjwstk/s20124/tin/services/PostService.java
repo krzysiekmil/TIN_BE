@@ -1,7 +1,6 @@
 package pjwstk.s20124.tin.services;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
@@ -9,27 +8,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.model.ERole;
-import pjwstk.s20124.tin.model.Event;
 import pjwstk.s20124.tin.model.Post;
 import pjwstk.s20124.tin.model.User;
-import pjwstk.s20124.tin.model.dto.input.PostCommentIncomeDto;
 import pjwstk.s20124.tin.model.dto.output.PostOutputDto;
 import pjwstk.s20124.tin.model.mapper.PostMapper;
 import pjwstk.s20124.tin.repository.PostRepository;
 import pjwstk.s20124.tin.repository.UserRepository;
 import pjwstk.s20124.tin.utils.SecurityUtils;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -41,21 +34,14 @@ public class PostService {
     private final FileStorageService fileStorageService;
     public Page<PostOutputDto> getList(Long authorId, String author, int pageNo, String order, String dir) {
 
-        User user = User.builder()
-            .id(authorId)
-            .build();
+        User user = userRepository.getReferenceById(authorId);
 
-        Post post = Post.builder()
-            .author(user)
-            .build();
-
-        Example<Post> example = Example.of(post, ExampleMatcher.matchingAny());
 
         Sort sort = Sort.by(order);
 
         Pageable pageable = PageRequest.of(pageNo, 20, sort);
 
-        return postRepository.findAll(example, pageable)
+        return postRepository.findPostByUser(user, pageable)
             .map(postMapper::mapToOutputDto);
     }
 

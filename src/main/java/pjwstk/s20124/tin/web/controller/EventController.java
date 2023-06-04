@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.common.CrudApi;
 import pjwstk.s20124.tin.model.Event;
 import pjwstk.s20124.tin.model.dto.input.EventIncomeDto;
@@ -63,9 +64,11 @@ public class EventController {
         eventService.delete(id);
     }
     @GetMapping("/{id}")
-    public Optional<EventOutputDto> getOne(@PathVariable Long id) {
+    public EventOutputDto getOne(@PathVariable Long id) {
 
-        return eventService.getOne(id).map(eventMapper::mapToOutputDto);
+        return eventService.getOne(id)
+            .map(eventMapper::mapToOutputDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping

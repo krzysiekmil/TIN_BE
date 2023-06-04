@@ -10,14 +10,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.BatchSize;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class InfoChange extends AbstractEntity{
 
     @Id
@@ -39,7 +48,54 @@ public class InfoChange extends AbstractEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private Event eventRelatedTo;
 
-    @OneToMany(mappedBy = "infoChange")
+    @BatchSize(size = 5)
+    @OneToMany(mappedBy = "infoChange", fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<Comment> comments;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        InfoChange that = (InfoChange) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+
+    public static InfoChange buildNewFriendChange(User user, User friend){
+        return InfoChange.builder()
+            .user(user)
+            .userRelatedTo(friend)
+            .type(InfoChangeType.NEW_FRIEND)
+            .build();
+    }
+
+    public static InfoChange buildNewAnimalChange(User user, Animal animal){
+        return InfoChange.builder()
+            .user(user)
+            .animalRelatedTo(animal)
+            .type(InfoChangeType.NEW_ANIMAL)
+            .build();
+    }
+
+    public static InfoChange buildEventCreatedChange(User user, Event event){
+        return InfoChange.builder()
+            .user(user)
+            .eventRelatedTo(event)
+            .type(InfoChangeType.EVENT_CREATED)
+            .build();
+    }
+
+    public static InfoChange buildEventAttendingStatusChange(User user, Event event){
+        return InfoChange.builder()
+            .user(user)
+            .eventRelatedTo(event)
+            .type(InfoChangeType.EVENT_ATTENDING_STATUS_CHANGE)
+            .build();
+    }
 
 }

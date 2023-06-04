@@ -3,6 +3,7 @@ package pjwstk.s20124.tin.web.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import pjwstk.s20124.tin.model.Post;
 import pjwstk.s20124.tin.model.dto.AnimalDto;
 import pjwstk.s20124.tin.model.dto.input.PostIncomeDto;
@@ -52,9 +54,10 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public Optional<PostOutputDto> getOne(@PathVariable Long id) {
+    public PostOutputDto getOne(@PathVariable Long id) {
         return postService.getOne(id)
-            .map(postMapper::mapToOutputDto);
+            .map(postMapper::mapToOutputDto)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping

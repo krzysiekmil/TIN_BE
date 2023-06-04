@@ -17,6 +17,7 @@ import pjwstk.s20124.tin.model.Event;
 import pjwstk.s20124.tin.model.EventMember;
 import pjwstk.s20124.tin.model.EventMemberAttendingStatus;
 import pjwstk.s20124.tin.model.EventMemberId;
+import pjwstk.s20124.tin.model.InfoChange;
 import pjwstk.s20124.tin.model.User;
 import pjwstk.s20124.tin.model.dto.input.EventMemberIncomeDto;
 import pjwstk.s20124.tin.model.mapper.EventMapper;
@@ -40,6 +41,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final EventMapper eventMapper;
+    private final InfoChangeService infoChangeService;
 
     public Event create(Event entity, List<Long> members) {
 
@@ -64,7 +66,13 @@ public class EventService {
 
         entity.getMembers().addAll(eventMembers);
 
-        return eventRepository.save(entity);
+        Event createdEvent = eventRepository.save(entity);
+
+
+        InfoChange infoChange = InfoChange.buildEventCreatedChange(host, createdEvent);
+        infoChangeService.createInfoChangeRegistry(infoChange);
+
+        return createdEvent;
     }
 
     @Transactional
@@ -139,13 +147,19 @@ public class EventService {
 
     @Transactional
     public void changeEventMemberStatus(Long id, EventMemberIncomeDto dto) {
+
         Event event = eventRepository.findEventById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        event.getMembers().stream()
-            .filter(eventMember -> eventMember.getUser().getUsername().equals(username))
+        EventMember eventMember  = event.getMembers().stream()
+            .filter(em -> em.getUser().getUsername().equals(username))
             .findFirst()
-            .ifPresent(eventMember -> eventMember.setAttendingStatus(dto.status()));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+
+       eventMember.setAttendingStatus(dto.status());
+
+       InfoChange infoChange = InfoChange.buildEventAttendingStatusChange(eventMember.getUser(), event);
+       infoChangeService.createInfoChangeRegistry(infoChange);
     }
 }
